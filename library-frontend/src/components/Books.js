@@ -3,7 +3,15 @@ const Books = (props) => {
     return null;
   }
 
-  const books = [];
+  if (props.bookResult.loading) {
+    return <div>loading...</div>;
+  }
+
+  const books = props.bookResult.data.allBooks;
+  // console.log(props.bookResult);
+  // console.log(books);
+
+  //  const books = [];
 
   return (
     <div>
