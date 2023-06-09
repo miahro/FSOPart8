@@ -111,21 +111,34 @@ const resolvers = {
       }
       const searchAuthor = await Author.findOne({ name: args.name });
       if (!searchAuthor) {
+        const newAuthor = new Author({ name: args.name });
         try {
-          const newAuthor = new Author({ name: args.name });
           await newAuthor.save();
-        } catch (error) {}
-      } else {
-        console.log("author found");
+        } catch (error) {
+          console.log("error in author save");
+          throw new GraphQLError("saving author failed", {
+            extension: {
+              code: "BAD_USER_INPUT",
+              invalidArgs: args.name,
+              error,
+            },
+          });
+        }
       }
-
       const author = await Author.findOne({ name: args.name });
       const newBook = new Book({ ...args });
       newBook.author = author;
       try {
-        newBook.save();
+        await newBook.save();
       } catch (error) {
-        console.log("saving newBook not succesfull, error: ", error);
+        console.log("error in saving newBook", args.title);
+        throw new GraphQLError("saving book failed", {
+          extension: {
+            code: "BAD_USER_INPUT",
+            invalidArgs: args.title,
+            error,
+          },
+        });
       }
       return newBook;
     },
@@ -137,9 +150,16 @@ const resolvers = {
       }
       author.born = args.setBornTo;
       try {
-        author.save();
+        await author.save();
       } catch (error) {
-        console.log("error saving author after update", error);
+        console.log("error saving author after update");
+        throw new GraphQLError("updating author failed", {
+          extension: {
+            code: "BAD_USER_INPUT",
+            invalidArgs: args.setBornTo,
+            error,
+          },
+        });
       }
       return author;
     },
