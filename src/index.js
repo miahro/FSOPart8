@@ -1,6 +1,6 @@
 const { ApolloServer } = require("@apollo/server");
 const { startStandaloneServer } = require("@apollo/server/standalone");
-const { v1: uuid } = require("uuid");
+//const { v1: uuid } = require("uuid");
 const { GraphQLError } = require("graphql");
 
 console.log(require("dotenv").config());
@@ -71,31 +71,17 @@ const resolvers = {
       return bookCount;
     },
     allBooks: async (root, args) => {
-      console.log("root", root);
-      console.log("args", args);
-      console.log("args.author", args.author);
-      console.log("args.genre ", args.genre);
       if (args.genre && args.author) {
-        return Book.find({ author: args.author, genres: [args.genre] });
+        const author = await Author.findOne({ name: args.author });
+        return Book.find({ author: author, genres: args.genre });
       } else if (args.genre) {
         return Book.find({ genres: args.genre });
       } else if (args.author) {
-        console.log(
-          "searching from args.author with args",
-          args,
-          "args.author",
-          args.author,
-          "typeof args.author",
-          typeof args.author
-        );
-
         const author = await Author.findOne({ name: args.author });
         if (author) {
-          console.log("author found", author.name, author.id);
           const foundBooks = await Book.find({
-            author: author.id,
+            author: author,
           });
-          console.log("type of foundBooks", typeof foundBooks);
           return foundBooks;
         } else {
           console.log("author not found");
@@ -111,7 +97,7 @@ const resolvers = {
   },
   Author: {
     bookCount: async (root) => {
-      const booksByAuthor = await Book.find({ author: args.author });
+      const booksByAuthor = await Book.find({ author: root });
       return booksByAuthor.length;
     },
   },
@@ -119,41 +105,25 @@ const resolvers = {
     addBook: async (root, args) => {
       const searchBook = await Book.findOne({ title: args.title });
       if (searchBook) {
-        console.log("validation errror in book name");
         throw new GraphQLError("Title must be unique", {
           extensions: { code: "BAD_USER_INPUT", invalidArgs: args.name },
         });
       }
-
-      console.log("addbook mutation, args: ", args);
-
-      console.log("args.name", args.name);
-
-      const newBook = new Book({ ...args });
-
       const searchAuthor = await Author.findOne({ name: args.name });
-
       if (!searchAuthor) {
-        console.log("author not found");
         try {
           const newAuthor = new Author({ name: args.name });
-          console.log("newAuthor: ", newAuthor);
           await newAuthor.save();
-        } catch (error) {
-          console.log("saving new author not succesful error", error);
-        }
+        } catch (error) {}
       } else {
         console.log("author found");
       }
 
-      const author = await Author.findOne(args.author);
-      console.log("author ", typeof author);
-
+      const author = await Author.findOne({ name: args.name });
+      const newBook = new Book({ ...args });
       newBook.author = author;
-      console.log("newBook ", newBook);
       try {
         newBook.save();
-        console.log("saving newBook succesfull");
       } catch (error) {
         console.log("saving newBook not succesfull, error: ", error);
       }
@@ -165,7 +135,6 @@ const resolvers = {
         console.log("author not found");
         return null;
       }
-      console.log("author found");
       author.born = args.setBornTo;
       try {
         author.save();
