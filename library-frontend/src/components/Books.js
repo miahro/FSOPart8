@@ -1,4 +1,8 @@
+import { useState } from "react";
 const Books = (props) => {
+  const [flt, setFlt] = useState("all");
+  const books = props?.bookResult?.data?.allBooks;
+
   if (!props.show) {
     return null;
   }
@@ -7,26 +11,25 @@ const Books = (props) => {
     return <div>loading...</div>;
   }
 
-  const books = props.bookResult.data.allBooks;
-  // console.log(props.bookResult);
-  // console.log(books);
+  const uniqueGenres = [...new Set(books.flatMap((book) => book.genres))];
 
-  // books.map((a) => {
-  //   console.log(
-  //     "title: ",
-  //     a.title,
-  //     "published: ",
-  //     a.published,
-  //     "author:",
-  //     a.author
-  //   );
-  // });
-  //  const books = [];
+  const filterHandler = (filt) => {
+    setFlt(filt);
+  };
+
+  const filteredBooks = () => {
+    if (flt === "all") {
+      return books;
+    }
+    return books.filter((book) => book.genres.includes(flt));
+  };
 
   return (
     <div>
       <h2>books</h2>
-
+      <p>
+        in genre <b>{flt}</b>
+      </p>
       <table>
         <tbody>
           <tr>
@@ -34,7 +37,7 @@ const Books = (props) => {
             <th>author</th>
             <th>published</th>
           </tr>
-          {books.map((a) => (
+          {filteredBooks().map((a) => (
             <tr key={a.title}>
               <td>{a.title}</td>
               <td>{a.author.name}</td>
@@ -43,6 +46,15 @@ const Books = (props) => {
           ))}
         </tbody>
       </table>
+
+      <button key={"all"} onClick={() => filterHandler("all")}>
+        all genres
+      </button>
+      {uniqueGenres.map((ug) => (
+        <button key={ug} onClick={() => filterHandler(ug)}>
+          {ug}
+        </button>
+      ))}
     </div>
   );
 };
