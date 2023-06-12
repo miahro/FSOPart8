@@ -42,6 +42,8 @@ const Authors = (props) => {
 
   const name = selectedOption ? selectedOption.value : "";
 
+  const token = localStorage.getItem("token");
+
   return (
     <div>
       <h2>authors</h2>
@@ -83,7 +85,7 @@ const Authors = (props) => {
             onChange={({ target }) => setBorn(target.value)}
           />
         </div>
-        <button type="submit">update author</button>
+        {token && <button type="submit">update author</button>}
       </form>
     </div>
   );

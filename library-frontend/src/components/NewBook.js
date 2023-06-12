@@ -5,7 +5,7 @@ import { CREATE_BOOK, ALL_BOOKS, ALL_AUTHORS } from "../queries";
 
 const NewBook = (props, { setError }) => {
   const [title, setTitle] = useState("");
-  const [author, setAuthor] = useState("");
+  const [authorName, setAuthorName] = useState("");
   const [published, setPublished] = useState("");
   const [genre, setGenre] = useState("");
   const [genres, setGenres] = useState([]);
@@ -27,12 +27,24 @@ const NewBook = (props, { setError }) => {
     event.preventDefault();
 
     console.log("add book...");
-    console.log("in submit values", title, published, author, genres, genre);
+    // console.log(
+    //   "in submit values",
+    //   "title: ",
+    //   title,
+    //   "published: ",
+    //   published,
+    //   "author: ",
+    //   authorName,
+    //   "genres: ",
+    //   genres,
+    //   "genre: ",
+    //   genre
+    // );
 
     createBook({
       variables: {
         title: title,
-        author: author,
+        name: authorName,
         published: parseInt(published),
         genres: genres,
       },
@@ -40,7 +52,7 @@ const NewBook = (props, { setError }) => {
 
     setTitle("");
     setPublished("");
-    setAuthor("");
+    setAuthorName("");
     setGenres([]);
     setGenre("");
   };
@@ -64,8 +76,8 @@ const NewBook = (props, { setError }) => {
         <div>
           author
           <input
-            value={author}
-            onChange={({ target }) => setAuthor(target.value)}
+            value={authorName}
+            onChange={({ target }) => setAuthorName(target.value)}
           />
         </div>
         <div>
