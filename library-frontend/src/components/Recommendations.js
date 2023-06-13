@@ -1,17 +1,25 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@apollo/client";
-import { ME } from "../queries";
+import { ME, BYGENRE } from "../queries";
 
 const Recommendations = (props) => {
   const [flt, setFlt] = useState("all");
-  const books = props?.bookResult?.data?.allBooks;
+  // const books = props?.bookResult?.data?.allBooks;
 
   const user = useQuery(ME);
 
+  const booksByGenreQuery = useQuery(BYGENRE, {
+    variables: { genre: flt !== "all" ? flt : "" },
+  });
+  console.log("result of BYGENRE query booksByGenre", booksByGenreQuery);
+
+  const booksByGenre = booksByGenreQuery.data?.allBooks;
+  console.log(booksByGenre);
+
   useEffect(() => {
-    console.log("are we running useEffect at all?");
+    //    console.log("are we running useEffect at all?");
     if (user.data?.me) {
-      console.log("are we ever getting here? with user details", user.data);
+      //     console.log("are we ever getting here? with user details", user.data);
       setFlt(user.data.me.favoriteGenre);
     }
   }, [user]);
@@ -24,13 +32,17 @@ const Recommendations = (props) => {
     return <div>loading...</div>;
   }
 
-  const filteredBooks = () => {
-    console.log(flt);
-    if (flt === "all") {
-      return books;
-    }
-    return books.filter((book) => book.genres.includes(flt));
-  };
+  if (booksByGenreQuery.loading) {
+    return <div>loading...</div>;
+  }
+
+  // const filteredBooks = () => {
+  //   console.log(flt);
+  //   if (flt === "all") {
+  //     return books;
+  //   }
+  //   return books.filter((book) => book.genres.includes(flt));
+  // };
 
   return (
     <div>
@@ -45,7 +57,7 @@ const Recommendations = (props) => {
             <th>author</th>
             <th>published</th>
           </tr>
-          {filteredBooks().map((a) => (
+          {booksByGenre.map((a) => (
             <tr key={a.title}>
               <td>{a.title}</td>
               <td>{a.author.name}</td>

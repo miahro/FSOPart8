@@ -1,7 +1,17 @@
 import { useState } from "react";
+import { BYGENRE } from "../queries";
+import { useQuery } from "@apollo/client";
+
 const Books = (props) => {
   const [flt, setFlt] = useState("all");
   const books = props?.bookResult?.data?.allBooks;
+
+  const booksByGenreQuery = useQuery(BYGENRE, {
+    variables: { genre: flt !== "all" ? flt : "" },
+  });
+  console.log("result of BYGENRE query booksByGenre", booksByGenreQuery);
+
+  const booksByGenre = booksByGenreQuery.data?.allBooks;
 
   if (!props.show) {
     return null;
@@ -11,17 +21,14 @@ const Books = (props) => {
     return <div>loading...</div>;
   }
 
+  if (booksByGenreQuery.loading) {
+    return <div>loading...</div>;
+  }
+
   const uniqueGenres = [...new Set(books.flatMap((book) => book.genres))];
 
   const filterHandler = (filt) => {
     setFlt(filt);
-  };
-
-  const filteredBooks = () => {
-    if (flt === "all") {
-      return books;
-    }
-    return books.filter((book) => book.genres.includes(flt));
   };
 
   return (
@@ -37,7 +44,7 @@ const Books = (props) => {
             <th>author</th>
             <th>published</th>
           </tr>
-          {filteredBooks().map((a) => (
+          {booksByGenre.map((a) => (
             <tr key={a.title}>
               <td>{a.title}</td>
               <td>{a.author.name}</td>
