@@ -1,13 +1,14 @@
 import { useState } from "react";
-import { BYGENRE } from "../queries";
+import { BY_GENRE } from "../queries";
 import { useQuery } from "@apollo/client";
 
 const Books = (props) => {
   const [flt, setFlt] = useState("all");
   const books = props?.bookResult?.data?.allBooks;
 
-  const booksByGenreQuery = useQuery(BYGENRE, {
+  const booksByGenreQuery = useQuery(BY_GENRE, {
     variables: { genre: flt !== "all" ? flt : "" },
+    fetchPolicy: "network-only",
   });
   console.log("result of BYGENRE query booksByGenre", booksByGenreQuery);
 

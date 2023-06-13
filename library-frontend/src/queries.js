@@ -67,7 +67,7 @@ export const ME = gql`
   }
 `;
 
-export const BYGENRE = gql`
+export const BY_GENRE = gql`
   query allBoooks($genre: String!) {
     allBooks(genre: $genre) {
       title
