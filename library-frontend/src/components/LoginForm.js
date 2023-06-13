@@ -12,6 +12,13 @@ const LoginForm = ({ show, setError, setToken }) => {
     },
   });
 
+  const submit = async (event) => {
+    event.preventDefault();
+    login({ variables: { username, password } });
+    setUsername("");
+    setPassword("");
+  };
+
   useEffect(() => {
     if (result.data) {
       const token = result.data.login.value;
@@ -19,13 +26,6 @@ const LoginForm = ({ show, setError, setToken }) => {
       localStorage.setItem("token", token);
     }
   }, [result.data]); // eslint-disable-line
-
-  const submit = async (event) => {
-    event.preventDefault();
-    login({ variables: { username, password } });
-    setUsername("");
-    setPassword("");
-  };
 
   if (!show) {
     return null;

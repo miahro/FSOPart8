@@ -118,6 +118,7 @@ const resolvers = {
       return foundAuthors;
     },
     me: (root, args, context) => {
+      console.log("query me: ", context.currentUser);
       return context.currentUser;
     },
   },
@@ -212,7 +213,12 @@ const resolvers = {
       return author;
     },
     createUser: async (root, args) => {
-      const user = new User({ username: args.username });
+      console.log(args);
+      const user = new User({
+        username: args.username,
+        favoriteGenre: args.favoriteGenre,
+      });
+      console.log("created user", user);
 
       return user.save().catch((error) => {
         throw new GraphQLError("Creating the user failed", {
