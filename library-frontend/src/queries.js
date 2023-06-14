@@ -46,12 +46,14 @@ export const CREATE_BOOK = gql`
     $genres: [String!]!
   ) {
     addBook(
-      ...BookDetails
-      ) {
+      title: $title
+      name: $name
+      published: $published
+      genres: $genres
+    ) {
       title
     }
   }
-  ${BOOK_DETAILS}
 `;
 
 export const SET_BIRTH = gql`
