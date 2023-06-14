@@ -10,7 +10,7 @@ const Books = (props) => {
     variables: { genre: flt !== "all" ? flt : "" },
     fetchPolicy: "network-only",
   });
-  console.log("result of BYGENRE query booksByGenre", booksByGenreQuery);
+  // console.log("result of BYGENRE query booksByGenre", booksByGenreQuery);
 
   const booksByGenre = booksByGenreQuery.data?.allBooks;
 

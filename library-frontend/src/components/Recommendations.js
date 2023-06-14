@@ -9,10 +9,10 @@ const Recommendations = (props) => {
   const booksByGenreQuery = useQuery(BY_GENRE, {
     variables: { genre: flt !== "all" ? flt : "" },
   });
-  console.log("result of BYGENRE query booksByGenre", booksByGenreQuery);
+  //  console.log("result of BYGENRE query booksByGenre", booksByGenreQuery);
 
   const booksByGenre = booksByGenreQuery.data?.allBooks;
-  console.log(booksByGenre);
+  //  console.log(booksByGenre);
 
   useEffect(() => {
     if (user.data?.me) {
