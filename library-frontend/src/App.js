@@ -6,7 +6,7 @@ import NewBook from "./components/NewBook";
 import LoginForm from "./components/LoginForm";
 import Recommendations from "./components/Recommendations";
 
-import { ALL_AUTHORS, ALL_BOOKS, BOOK_ADDED } from "./queries";
+import { ALL_AUTHORS, ALL_BOOKS, BOOK_ADDED, BY_GENRE } from "./queries";
 
 const Notify = ({ errorMessage }) => {
   if (!errorMessage) {
@@ -41,8 +41,19 @@ const App = () => {
     onData: ({ data }) => {
       console.log(data);
       console.log(data?.data?.bookAdded?.title);
-      window.alert("New book added" + data.data?.bookAdded?.title);
-      //notify("New book added" + data.data?.bookAdded?.title);
+      const addedBook = data.data.bookAdded.title;
+      //window.alert("New book added" + data.data?.bookAdded?.title);
+      notify("New book added" + addedBook);
+      client.cache.updateQuery({ query: ALL_BOOKS }, ({ allBooks }) => {
+        return {
+          allBooks: allBooks.concat(addedBook),
+        };
+      });
+      client.cache.updateQuery({ query: BY_GENRE }, ({ allBooks }) => {
+        return {
+          allBooks: allBooks.concat(addedBook),
+        };
+      });
     },
   });
 
