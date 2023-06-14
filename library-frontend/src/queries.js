@@ -1,26 +1,41 @@
 import { gql } from "@apollo/client";
 
+const AUTHOR_DETAILS = gql`
+  fragment AuthorDetails on Author {
+    name
+    id
+    born
+    bookCount
+  }
+`;
+
 export const ALL_AUTHORS = gql`
   query {
     allAuthors {
-      name
-      born
-      bookCount
+      ...AuthorDetails
     }
+  }
+  ${AUTHOR_DETAILS}
+`;
+
+const BOOK_DETAILS = gql`
+  fragment BookDetails on Book {
+    title
+    published
+    author {
+      name
+    }
+    genres
   }
 `;
 
 export const ALL_BOOKS = gql`
   query {
     allBooks {
-      title
-      author {
-        name
-      }
-      published
-      genres
+      ...BookDetails
     }
   }
+  ${BOOK_DETAILS}
 `;
 
 export const CREATE_BOOK = gql`
@@ -31,14 +46,12 @@ export const CREATE_BOOK = gql`
     $genres: [String!]!
   ) {
     addBook(
-      title: $title
-      name: $name
-      published: $published
-      genres: $genres
-    ) {
+      ...BookDetails
+      ) {
       title
     }
   }
+  ${BOOK_DETAILS}
 `;
 
 export const SET_BIRTH = gql`
@@ -67,15 +80,11 @@ export const ME = gql`
   }
 `;
 
-export const BYGENRE = gql`
+export const BY_GENRE = gql`
   query allBoooks($genre: String!) {
     allBooks(genre: $genre) {
-      title
-      author {
-        name
-      }
-      published
-      genres
+      ...BookDetails
     }
   }
+  ${BOOK_DETAILS}
 `;

@@ -3,27 +3,8 @@ const { startStandaloneServer } = require("@apollo/server/standalone");
 //const { v1: uuid } = require("uuid");
 const { GraphQLError } = require("graphql");
 const jwt = require("jsonwebtoken");
-
-console.log(require("dotenv").config());
-require("dotenv").config({ path: "../.env" });
-console.log(require("dotenv").config());
-
-const mongoose = require("mongoose");
-mongoose.set("strictQuery", false);
-const Book = require("./models/book");
-const Author = require("./models/author");
-const User = require("./models/user");
-
-const url = process.env.MONGODB_URI;
-console.log("connecting to MongoDB");
-mongoose
-  .connect(url)
-  .then(() => {
-    console.log("connected to MongoDB");
-  })
-  .catch((error) => {
-    console.log("error connecting to MongoDB", error);
-  });
+//const typeDefs = require("./schema");
+//const resolvers = require("./resolvers");
 
 const typeDefs = `
   type Author {
@@ -251,6 +232,27 @@ const resolvers = {
     },
   },
 };
+
+console.log(require("dotenv").config());
+require("dotenv").config({ path: "../.env" });
+console.log(require("dotenv").config());
+
+const mongoose = require("mongoose");
+mongoose.set("strictQuery", false);
+const Book = require("./models/book");
+const Author = require("./models/author");
+const User = require("./models/user");
+
+const url = process.env.MONGODB_URI;
+console.log("connecting to MongoDB");
+mongoose
+  .connect(url)
+  .then(() => {
+    console.log("connected to MongoDB");
+  })
+  .catch((error) => {
+    console.log("error connecting to MongoDB", error);
+  });
 
 const server = new ApolloServer({
   typeDefs,
