@@ -39,7 +39,8 @@ const resolvers = {
       }
     },
     allAuthors: async () => {
-      const foundAuthors = await Author.find({});
+      const foundAuthors = await Author.find({}).populate("books");
+      console.log("author count called");
       return foundAuthors;
     },
     me: (root, args, context) => {
@@ -48,11 +49,18 @@ const resolvers = {
     },
   },
   Author: {
-    bookCount: async (root) => {
-      const booksByAuthor = await Book.find({ author: root });
-      return booksByAuthor.length;
+    bookCount: (root) => {
+      return root.books.length;
     },
   },
+
+  // Author: {
+  //   bookCount: async (root) => {
+  //     console.log("Author:bookCount called");
+  //     const booksByAuthor = await Book.find({ author: root });
+  //     return booksByAuthor.length;
+  //   },
+  // },
 
   Mutation: {
     addBook: async (root, args, context) => {
@@ -92,6 +100,21 @@ const resolvers = {
       const author = await Author.findOne({ name: args.name });
       const newBook = new Book({ ...args });
       newBook.author = author;
+
+      author.books = author.books.concat(newBook._id);
+      try {
+        await author.updateOne({ $push: { books: newBook } });
+      } catch (error) {
+        console.log("error in saving books for author", args.name);
+        throw new GraphQLError("saving author failed", {
+          extension: {
+            code: "BAD_USER_INPUT",
+            invalidArgs: args.title,
+            error,
+          },
+        });
+      }
+
       try {
         await newBook.save();
       } catch (error) {

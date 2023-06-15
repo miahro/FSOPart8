@@ -8,7 +8,7 @@ const Books = (props) => {
 
   const booksByGenreQuery = useQuery(BY_GENRE, {
     variables: { genre: flt !== "all" ? flt : "" },
-    fetchPolicy: "network-only",
+    //fetchPolicy: "network-only",
   });
   // console.log("result of BYGENRE query booksByGenre", booksByGenreQuery);
 
